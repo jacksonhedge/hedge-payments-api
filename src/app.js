@@ -3,6 +3,7 @@ const helmet = require('helmet');
 const cors = require('cors');
 const rateLimit = require('express-rate-limit');
 const morgan = require('morgan');
+const path = require('path');
 const config = require('./config/config');
 const logger = require('./utils/logger');
 const { errorHandler, notFound } = require('./middleware/errorHandler');
@@ -18,7 +19,9 @@ const kycRoutes = require('./routes/kycRoutes');
 const app = express();
 
 // Security middleware
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: false, // Allow inline scripts for website
+}));
 
 // CORS
 app.use(cors(config.cors));
@@ -50,6 +53,9 @@ if (config.env !== 'test') {
   );
 }
 
+// Serve static files (website)
+app.use(express.static(path.join(__dirname, '../public')));
+
 // Health check endpoint
 app.get('/health', (req, res) => {
   res.status(200).json({
@@ -61,7 +67,7 @@ app.get('/health', (req, res) => {
 });
 
 // API info endpoint
-app.get('/', (req, res) => {
+app.get('/api', (req, res) => {
   res.status(200).json({
     success: true,
     name: 'Hedge Payments API',

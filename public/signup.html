@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Hedge Payments</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <h1>🔷 Hedge Payments</h1>
+            </div>
+            <div class="nav-menu">
+                <a href="/">Home</a>
+                <a href="/docs.html">Documentation</a>
+                <a href="/pricing.html">Pricing</a>
+                <a href="/signup.html" class="btn-primary">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Signup Section -->
+    <section class="signup-section">
+        <div class="container">
+            <div class="signup-container">
+                <div class="signup-header">
+                    <h1>Create Your Account</h1>
+                    <p>Start accepting payments in minutes</p>
+                </div>
+
+                <form class="signup-form" id="signupForm">
+                    <div class="form-group">
+                        <label for="companyName">Company Name</label>
+                        <input type="text" id="companyName" name="companyName" required
+                               placeholder="Acme Inc.">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="firstName">First Name</label>
+                            <input type="text" id="firstName" name="firstName" required
+                                   placeholder="John">
+                        </div>
+                        <div class="form-group">
+                            <label for="lastName">Last Name</label>
+                            <input type="text" id="lastName" name="lastName" required
+                                   placeholder="Doe">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Business Email</label>
+                        <input type="email" id="email" name="email" required
+                               placeholder="john@acme.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" name="password" required
+                               placeholder="••••••••" minlength="8">
+                        <small>Minimum 8 characters</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" name="confirmPassword" required
+                               placeholder="••••••••">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="usageType">What will you use Hedge Payments for?</label>
+                        <select id="usageType" name="usageType" required>
+                            <option value="">Select...</option>
+                            <option value="ecommerce">E-commerce</option>
+                            <option value="saas">SaaS Platform</option>
+                            <option value="marketplace">Marketplace</option>
+                            <option value="crypto">Crypto Services</option>
+                            <option value="ai">AI Applications</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="terms" name="terms" required>
+                            I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                        </label>
+                    </div>
+
+                    <button type="submit" class="btn btn-large btn-primary full-width">
+                        Create Account
+                    </button>
+                </form>
+
+                <div class="signup-footer">
+                    <p>Already have an account? <a href="/login.html">Sign in</a></p>
+                </div>
+
+                <div class="features-list">
+                    <h3>What you get:</h3>
+                    <ul>
+                        <li>✅ Free 30-day trial</li>
+                        <li>✅ Access to all 24+ API endpoints</li>
+                        <li>✅ Support for 7 currencies</li>
+                        <li>✅ Complete API documentation</li>
+                        <li>✅ Sandbox environment for testing</li>
+                        <li>✅ Email support</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2025 Hedge Payments. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/signup.js"></script>
+</body>
+</html>
