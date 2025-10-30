@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: hedge-payments-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: JWT_EXPIRES_IN
+        value: 24h
+      - key: COINFLOW_API_KEY
+        sync: false
+      - key: COINFLOW_API_SECRET
+        sync: false
+      - key: COINFLOW_BASE_URL
+        value: https://api.coinflow.cash
+      - key: COINFLOW_ENVIRONMENT
+        value: sandbox
+      - key: COINFLOW_MERCHANT_ID
+        sync: false
+      - key: CORS_ORIGIN
+        value: "*"
+      - key: LOG_LEVEL
+        value: info
+      - key: RATE_LIMIT_WINDOW_MS
+        value: 60000
+      - key: RATE_LIMIT_MAX
+        value: 100
