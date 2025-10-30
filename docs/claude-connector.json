@@ -1,0 +1,206 @@
+{
+  "name": "Hedge Payments API",
+  "description": "Payment processing API with Coinflow integration for cryptocurrency and fiat payments",
+  "version": "1.0.0",
+  "api_url": "https://your-api-domain.com",
+  "authentication": {
+    "type": "bearer",
+    "token_endpoint": "/api/auth/login",
+    "refresh_endpoint": "/api/auth/refresh"
+  },
+  "capabilities": [
+    "Create and manage payments",
+    "Check account balances",
+    "View transaction history",
+    "Process refunds",
+    "Initiate KYC verification",
+    "Create payouts"
+  ],
+  "endpoints": [
+    {
+      "path": "/api/auth/login",
+      "method": "POST",
+      "description": "Authenticate and get JWT token",
+      "parameters": {
+        "email": {
+          "type": "string",
+          "required": true,
+          "description": "User email address"
+        },
+        "password": {
+          "type": "string",
+          "required": true,
+          "description": "User password"
+        },
+        "merchantId": {
+          "type": "string",
+          "required": true,
+          "description": "Merchant identifier"
+        }
+      }
+    },
+    {
+      "path": "/api/payments",
+      "method": "POST",
+      "description": "Create a new payment transaction",
+      "authentication": true,
+      "parameters": {
+        "amount": {
+          "type": "number",
+          "required": true,
+          "description": "Payment amount"
+        },
+        "currency": {
+          "type": "string",
+          "required": true,
+          "enum": ["USD", "EUR", "GBP", "BTC", "ETH", "USDC", "USDT"],
+          "description": "Payment currency"
+        },
+        "customerEmail": {
+          "type": "string",
+          "required": true,
+          "description": "Customer email address"
+        },
+        "customerName": {
+          "type": "string",
+          "required": false,
+          "description": "Customer full name"
+        },
+        "description": {
+          "type": "string",
+          "required": false,
+          "description": "Payment description"
+        }
+      }
+    },
+    {
+      "path": "/api/payments/:paymentId",
+      "method": "GET",
+      "description": "Get payment details by ID",
+      "authentication": true,
+      "parameters": {
+        "paymentId": {
+          "type": "string",
+          "required": true,
+          "in": "path",
+          "description": "Payment ID"
+        }
+      }
+    },
+    {
+      "path": "/api/balance",
+      "method": "GET",
+      "description": "Get account balance",
+      "authentication": true,
+      "parameters": {
+        "currency": {
+          "type": "string",
+          "required": false,
+          "enum": ["USD", "EUR", "GBP", "BTC", "ETH", "USDC", "USDT"],
+          "description": "Currency to check balance for"
+        }
+      }
+    },
+    {
+      "path": "/api/transactions",
+      "method": "GET",
+      "description": "Get transaction history with filters",
+      "authentication": true,
+      "parameters": {
+        "page": {
+          "type": "integer",
+          "required": false,
+          "default": 1,
+          "description": "Page number"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "default": 20,
+          "description": "Items per page"
+        },
+        "status": {
+          "type": "string",
+          "required": false,
+          "enum": ["pending", "completed", "failed", "cancelled", "refunded"],
+          "description": "Filter by transaction status"
+        },
+        "startDate": {
+          "type": "string",
+          "required": false,
+          "description": "Start date (ISO format)"
+        },
+        "endDate": {
+          "type": "string",
+          "required": false,
+          "description": "End date (ISO format)"
+        }
+      }
+    },
+    {
+      "path": "/api/kyc/initiate",
+      "method": "POST",
+      "description": "Initiate KYC verification process",
+      "authentication": true,
+      "parameters": {
+        "userId": {
+          "type": "string",
+          "required": true,
+          "description": "User identifier"
+        },
+        "firstName": {
+          "type": "string",
+          "required": true,
+          "description": "First name"
+        },
+        "lastName": {
+          "type": "string",
+          "required": true,
+          "description": "Last name"
+        },
+        "email": {
+          "type": "string",
+          "required": true,
+          "description": "Email address"
+        },
+        "dateOfBirth": {
+          "type": "string",
+          "required": true,
+          "description": "Date of birth (YYYY-MM-DD)"
+        },
+        "nationality": {
+          "type": "string",
+          "required": true,
+          "description": "Nationality (ISO 3166-1 alpha-2)"
+        }
+      }
+    }
+  ],
+  "rate_limits": {
+    "requests_per_minute": 100,
+    "burst_limit": 120
+  },
+  "security": {
+    "https_required": true,
+    "cors_enabled": true,
+    "rate_limiting": true,
+    "helmet_security_headers": true
+  },
+  "error_handling": {
+    "format": "json",
+    "includes_stack_trace": "development_only",
+    "standard_codes": true
+  },
+  "submission_info": {
+    "category": "finance",
+    "tags": ["payments", "cryptocurrency", "fintech", "transactions"],
+    "use_cases": [
+      "Process cryptocurrency payments",
+      "Check payment balances",
+      "View transaction history",
+      "Manage refunds",
+      "Complete KYC verification"
+    ],
+    "target_audience": "Users who need to process payments, manage transactions, and handle cryptocurrency operations"
+  }
+}

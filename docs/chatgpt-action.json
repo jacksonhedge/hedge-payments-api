@@ -1,0 +1,273 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Hedge Payments API",
+    "description": "Production-ready payment processing API with Coinflow integration for cryptocurrency and fiat payments",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Hedge Payments Support",
+      "email": "jacksonfitzgerald25@gmail.com"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://your-api-domain.com/api",
+      "description": "Production server"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "JWT token obtained from /auth/login endpoint"
+      }
+    },
+    "schemas": {
+      "Payment": {
+        "type": "object",
+        "required": ["amount", "currency", "customerEmail"],
+        "properties": {
+          "amount": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Payment amount"
+          },
+          "currency": {
+            "type": "string",
+            "enum": ["USD", "EUR", "GBP", "BTC", "ETH", "USDC", "USDT"],
+            "description": "Payment currency"
+          },
+          "customerEmail": {
+            "type": "string",
+            "format": "email",
+            "description": "Customer email"
+          },
+          "customerName": {
+            "type": "string",
+            "description": "Customer name"
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 500,
+            "description": "Payment description"
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password", "merchantId"],
+        "properties": {
+          "email": {
+            "type": "string",
+            "format": "email"
+          },
+          "password": {
+            "type": "string",
+            "minLength": 8
+          },
+          "merchantId": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "bearerAuth": []
+    }
+  ],
+  "paths": {
+    "/auth/login": {
+      "post": {
+        "summary": "Authenticate and get JWT token",
+        "operationId": "login",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful authentication",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "token": {
+                          "type": "string"
+                        },
+                        "expiresIn": {
+                          "type": "string"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/payments": {
+      "post": {
+        "summary": "Create a new payment",
+        "operationId": "createPayment",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Payment"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Payment created successfully"
+          }
+        }
+      }
+    },
+    "/payments/{paymentId}": {
+      "get": {
+        "summary": "Get payment details",
+        "operationId": "getPayment",
+        "parameters": [
+          {
+            "name": "paymentId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Payment details"
+          }
+        }
+      }
+    },
+    "/balance": {
+      "get": {
+        "summary": "Get account balance",
+        "operationId": "getBalance",
+        "parameters": [
+          {
+            "name": "currency",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["USD", "EUR", "GBP", "BTC", "ETH", "USDC", "USDT"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Account balance"
+          }
+        }
+      }
+    },
+    "/transactions": {
+      "get": {
+        "summary": "Get transaction history",
+        "operationId": "getTransactions",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "default": 20
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "enum": ["pending", "completed", "failed", "cancelled", "refunded"]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Transaction list"
+          }
+        }
+      }
+    },
+    "/kyc/initiate": {
+      "post": {
+        "summary": "Initiate KYC verification",
+        "operationId": "initiateKYC",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["userId", "firstName", "lastName", "email", "dateOfBirth", "nationality"],
+                "properties": {
+                  "userId": {
+                    "type": "string"
+                  },
+                  "firstName": {
+                    "type": "string"
+                  },
+                  "lastName": {
+                    "type": "string"
+                  },
+                  "email": {
+                    "type": "string",
+                    "format": "email"
+                  },
+                  "dateOfBirth": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "nationality": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "KYC initiated successfully"
+          }
+        }
+      }
+    }
+  }
+}
