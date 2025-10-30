@@ -1,0 +1,15 @@
+{
+  "mcpServers": {
+    "hedge-payments": {
+      "url": "https://hedge-payments-mcp.onrender.com/mcp",
+      "transport": "streamable-http",
+      "auth": {
+        "type": "oauth2",
+        "credentials": {
+          "email": "your-merchant@example.com",
+          "password": "your-password"
+        }
+      }
+    }
+  }
+}
