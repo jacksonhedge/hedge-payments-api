@@ -35,13 +35,25 @@ app.get('/health', (req: Request, res: Response) => {
 
 /**
  * MCP endpoint - Streamable HTTP transport
- * Handles authentication and tool calls
+ * Handles authentication and tool calls using JSON-RPC 2.0 format
  */
 app.post('/mcp', async (req: Request, res: Response) => {
   try {
-    const { method, params } = req.body;
+    const { jsonrpc, method, params, id } = req.body;
 
-    console.log('[HTTP] Received MCP request:', { method, params });
+    console.log('[HTTP] Received MCP request:', { jsonrpc, method, params, id });
+
+    // Validate JSON-RPC format
+    if (jsonrpc !== '2.0') {
+      return res.status(400).json({
+        jsonrpc: '2.0',
+        error: {
+          code: -32600,
+          message: 'Invalid Request - must use JSON-RPC 2.0',
+        },
+        id: id || null,
+      });
+    }
 
     // Initialize MCP server if needed
     if (!mcpServer) {
@@ -54,16 +66,23 @@ app.post('/mcp', async (req: Request, res: Response) => {
 
       if (!email || !password) {
         return res.status(400).json({
-          success: false,
-          error: 'Email and password are required',
+          jsonrpc: '2.0',
+          error: {
+            code: -32602,
+            message: 'Email and password are required',
+          },
+          id,
         });
       }
 
       await mcpServer.authenticate(email, password);
 
       return res.json({
-        success: true,
-        message: 'Authentication successful',
+        jsonrpc: '2.0',
+        result: {
+          message: 'Authentication successful',
+        },
+        id,
       });
     }
 
@@ -72,8 +91,11 @@ app.post('/mcp', async (req: Request, res: Response) => {
       const tools = await mcpServer.listTools();
 
       return res.json({
-        success: true,
-        data: { tools },
+        jsonrpc: '2.0',
+        result: {
+          tools,
+        },
+        id,
       });
     }
 
@@ -83,23 +105,32 @@ app.post('/mcp', async (req: Request, res: Response) => {
 
       if (!mcpServer.getContext()) {
         return res.status(401).json({
-          success: false,
-          error: 'Not authenticated. Please authenticate first.',
+          jsonrpc: '2.0',
+          error: {
+            code: -32001,
+            message: 'Not authenticated. Please authenticate first.',
+          },
+          id,
         });
       }
 
       const result = await mcpServer.callTool(name, args);
 
       return res.json({
-        success: true,
-        data: result,
+        jsonrpc: '2.0',
+        result,
+        id,
       });
     }
 
     // Unknown method
     return res.status(400).json({
-      success: false,
-      error: `Unknown method: ${method}`,
+      jsonrpc: '2.0',
+      error: {
+        code: -32601,
+        message: `Method not found: ${method}`,
+      },
+      id,
     });
   } catch (error) {
     console.error('[HTTP] Error handling MCP request:', error);
@@ -108,8 +139,12 @@ app.post('/mcp', async (req: Request, res: Response) => {
       error instanceof Error ? error.message : 'Unknown error';
 
     return res.status(500).json({
-      success: false,
-      error: errorMessage,
+      jsonrpc: '2.0',
+      error: {
+        code: -32603,
+        message: errorMessage,
+      },
+      id: req.body.id || null,
     });
   }
 });
