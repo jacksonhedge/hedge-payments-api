@@ -1,0 +1,27 @@
+{
+  "rewrites": [
+    {
+      "source": "/coverpay",
+      "destination": "/coverpay-demo.html"
+    },
+    {
+      "source": "/",
+      "destination": "/coverpay-demo.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        }
+      ]
+    }
+  ]
+}

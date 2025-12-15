@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CoverPay - BNPL Orchestration | Hedge Payments</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --mint: #3EB489;
+            --mint-dark: #2E8B6D;
+            --mint-light: #98D8C8;
+            --teal: #1a5c4b;
+            --white: #ffffff;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-600: #4b5563;
+            --gray-800: #1f2937;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            color: var(--gray-800);
+            overflow-x: hidden;
+        }
+
+        /* Animated Gradient Background */
+        .gradient-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(-45deg, #3EB489, #2E8B6D, #1a5c4b, #98D8C8, #3EB489);
+            background-size: 400% 400%;
+            animation: gradientShift 15s ease infinite;
+            z-index: -2;
+        }
+
+        @keyframes gradientShift {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating orbs for depth */
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            z-index: -1;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+            width: 500px;
+            height: 500px;
+            background: rgba(255, 255, 255, 0.3);
+            top: -150px;
+            right: -150px;
+        }
+
+        .orb-2 {
+            width: 400px;
+            height: 400px;
+            background: rgba(152, 216, 200, 0.4);
+            bottom: -100px;
+            left: -100px;
+            animation-delay: -7s;
+        }
+
+        .orb-3 {
+            width: 300px;
+            height: 300px;
+            background: rgba(26, 92, 75, 0.3);
+            top: 40%;
+            right: 10%;
+            animation-delay: -14s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+
+        /* Hero Section - Full Page */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 60px 20px;
+            position: relative;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            z-index: 1;
+        }
+
+        /* CoverPay Logo */
+        .coverpay-logo {
+            width: 280px;
+            height: auto;
+            margin-bottom: 30px;
+            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.15));
+        }
+
+        .hero-tagline {
+            font-size: 1.1em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2em, 6vw, 3.5em);
+            font-weight: 800;
+            color: var(--white);
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero-subtitle {
+            font-size: 1.2em;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 40px;
+            font-weight: 400;
+            max-width: 650px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        /* Stats Row */
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 45px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1;
+        }
+
+        .stat-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        /* Integrated Providers Section */
+        .providers-row {
+            margin-bottom: 45px;
+        }
+
+        .providers-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.8em;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .provider-logos {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .provider-logo-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .provider-logo-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .provider-logo-card img {
+            height: 30px;
+            width: auto;
+            max-width: 90px;
+            object-fit: contain;
+            display: block;
+        }
+
+        /* CTA Button */
+        .hero-cta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--white);
+            color: var(--teal);
+            padding: 16px 45px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--white);
+            padding: 16px 40px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            text-decoration: none;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--white);
+        }
+
+        /* Footer Text */
+        .hero-footer {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85em;
+        }
+
+        .hero-footer a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+        }
+
+        .hero-footer a:hover {
+            color: var(--white);
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal {
+            background: var(--white);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 550px;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.4s ease;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, var(--mint-light) 0%, var(--mint) 100%);
+            padding: 30px;
+            text-align: center;
+            border-radius: 24px 24px 0 0;
+        }
+
+        .modal-header .modal-logo {
+            height: 50px;
+            margin-bottom: 15px;
+        }
+
+        .modal-header h2 {
+            color: var(--teal);
+            font-size: 1.2em;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .modal-header .amount {
+            font-size: 2.8em;
+            font-weight: 800;
+            color: var(--teal);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-title {
+            text-align: center;
+            color: var(--gray-600);
+            font-size: 1em;
+            margin-bottom: 25px;
+        }
+
+        .provider-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .provider-card {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: 14px;
+            padding: 18px 12px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .provider-card img {
+            width: 100%;
+            height: 35px;
+            object-fit: contain;
+            margin-bottom: 8px;
+            transition: all 0.3s;
+        }
+
+        .provider-card .provider-name {
+            font-size: 0.8em;
+            font-weight: 600;
+            color: var(--gray-600);
+            margin-bottom: 6px;
+        }
+
+        .provider-card .status-badge {
+            font-size: 0.7em;
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .provider-card.pending {
+            opacity: 0.5;
+        }
+
+        .provider-card.pending img {
+            filter: grayscale(100%);
+        }
+
+        .provider-card.pending .status-badge {
+            background: var(--gray-200);
+            color: var(--gray-600);
+        }
+
+        .provider-card.checking {
+            border-color: #fbbf24;
+            background: #fffbeb;
+            animation: pulse 1.5s infinite;
+            opacity: 1;
+        }
+
+        .provider-card.checking img {
+            filter: grayscale(0%);
+        }
+
+        .provider-card.checking .status-badge {
+            background: #fbbf24;
+            color: #92400e;
+        }
+
+        .provider-card.approved {
+            border-color: #10b981;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        .provider-card.approved .status-badge {
+            background: #10b981;
+            color: white;
+        }
+
+        .provider-card.declined {
+            border-color: #ef4444;
+            background: #fef2f2;
+            opacity: 0.6;
+        }
+
+        .provider-card.declined img {
+            filter: grayscale(50%);
+        }
+
+        .provider-card.declined .status-badge {
+            background: #ef4444;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(251, 191, 36, 0); }
+        }
+
+        .progress-section {
+            text-align: center;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: 12px;
+        }
+
+        .progress-bar-container {
+            background: var(--gray-200);
+            border-radius: 10px;
+            height: 6px;
+            margin: 12px 0;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, var(--mint) 0%, var(--mint-dark) 100%);
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .progress-text {
+            color: var(--gray-600);
+            font-size: 0.9em;
+        }
+
+        .success-screen, .declined-screen {
+            display: none;
+            text-align: center;
+            padding: 30px 20px;
+        }
+
+        .success-screen.active, .declined-screen.active {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        .success-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+        }
+
+        .success-screen h3 {
+            color: #10b981;
+            font-size: 1.6em;
+            margin-bottom: 10px;
+        }
+
+        .declined-screen h3 {
+            color: #ef4444;
+            font-size: 1.4em;
+            margin-bottom: 10px;
+        }
+
+        .approved-provider {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 2px solid #10b981;
+        }
+
+        .approved-provider img {
+            height: 45px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+
+        .approved-provider .provider-label {
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .success-details {
+            background: var(--gray-50);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .detail-row:last-child {
+            border-bottom: none;
+        }
+
+        .detail-row .label {
+            color: var(--gray-600);
+        }
+
+        .detail-row .value {
+            color: var(--teal);
+            font-weight: 600;
+        }
+
+        .modal-footer {
+            padding: 20px 30px 30px;
+            text-align: center;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-close {
+            background: var(--gray-200);
+            color: var(--gray-800);
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-close:hover {
+            background: var(--gray-600);
+            color: white;
+        }
+
+        .btn-redirect {
+            background: linear-gradient(135deg, var(--mint) 0%, var(--mint-dark) 100%);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 10px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-redirect:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(62, 180, 137, 0.4);
+        }
+
+        /* Demo Form Modal */
+        .demo-modal {
+            background: var(--white);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 480px;
+            animation: slideUp 0.4s ease;
+            box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .demo-modal-header {
+            background: linear-gradient(135deg, var(--mint-light) 0%, var(--mint) 100%);
+            padding: 25px 30px;
+            text-align: center;
+        }
+
+        .demo-modal-header h3 {
+            color: var(--teal);
+            font-size: 1.4em;
+            font-weight: 700;
+        }
+
+        .demo-modal-body {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--gray-800);
+            font-size: 0.9em;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid var(--gray-200);
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--mint);
+            box-shadow: 0 0 0 4px rgba(62, 180, 137, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .btn-demo {
+            width: 100%;
+            background: linear-gradient(135deg, var(--mint) 0%, var(--mint-dark) 100%);
+            color: var(--white);
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 10px;
+        }
+
+        .btn-demo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 35px rgba(62, 180, 137, 0.4);
+        }
+
+        .demo-modal-footer {
+            padding: 0 30px 25px;
+            text-align: center;
+        }
+
+        .demo-modal-footer button {
+            background: none;
+            border: none;
+            color: var(--gray-600);
+            cursor: pointer;
+            font-size: 0.9em;
+        }
+
+        .demo-modal-footer button:hover {
+            color: var(--gray-800);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+
+            .hero-stats {
+                gap: 25px;
+            }
+
+            .stat-value {
+                font-size: 2em;
+            }
+
+            .provider-logos {
+                gap: 12px;
+            }
+
+            .provider-logo-card {
+                padding: 10px 15px;
+            }
+
+            .provider-logo-card img {
+                height: 24px;
+                max-width: 70px;
+            }
+
+            .coverpay-logo {
+                width: 200px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .provider-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .modal, .demo-modal {
+                width: 95%;
+                margin: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated Background -->
+    <div class="gradient-bg"></div>
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <!-- CoverPay Logo -->
+            <img src="logos/CoverPayLogoV1.png" alt="CoverPay" class="coverpay-logo">
+
+            <div class="hero-tagline">BNPL Orchestration Layer</div>
+
+            <h1>Never Lose a Sale to BNPL Declines</h1>
+
+            <p class="hero-subtitle">
+                One API integration routes checkouts through 6 Buy Now Pay Later providers until one approves.
+            </p>
+
+            <!-- Stats -->
+            <div class="hero-stats">
+                <div class="stat">
+                    <div class="stat-value">40-60%</div>
+                    <div class="stat-label">Increased BNPL Transactions</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">BNPL Providers</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">API Integration</div>
+                </div>
+            </div>
+
+            <!-- Integrated Providers -->
+            <div class="providers-row">
+                <div class="providers-label">Integrated Partners</div>
+                <div class="provider-logos">
+                    <div class="provider-logo-card">
+                        <img src="logos/KlarnaLogo.jpeg" alt="Klarna">
+                    </div>
+                    <div class="provider-logo-card">
+                        <img src="logos/affirmLogo.avif" alt="Affirm">
+                    </div>
+                    <div class="provider-logo-card">
+                        <img src="logos/afterPayLogo.jpg" alt="Afterpay">
+                    </div>
+                    <div class="provider-logo-card">
+                        <img src="logos/sezzleLogo.png" alt="Sezzle">
+                    </div>
+                    <div class="provider-logo-card">
+                        <img src="logos/zipLogo.png" alt="Zip">
+                    </div>
+                    <div class="provider-logo-card">
+                        <img src="logos/PayPalLogo.jpg" alt="PayPal">
+                    </div>
+                </div>
+            </div>
+
+            <!-- CTA -->
+            <div class="hero-cta">
+                <button class="btn-primary" id="openDemoBtn">
+                    Try Demo
+                    <span>→</span>
+                </button>
+                <a href="/docs/COVERPAY_API.md" class="btn-secondary">View API Docs</a>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="hero-footer">
+            A <a href="/">Hedge Payments</a> Product · © 2025
+        </div>
+    </section>
+
+    <!-- Demo Form Modal -->
+    <div class="modal-overlay" id="demoFormModal">
+        <div class="demo-modal">
+            <div class="demo-modal-header">
+                <h3>Try the Demo</h3>
+            </div>
+            <div class="demo-modal-body">
+                <form id="checkoutForm">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="amount">Amount (USD)</label>
+                            <input type="number" id="amount" name="amount" value="299.99" step="0.01" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="strategy">Strategy</label>
+                            <select id="strategy" name="strategy" required>
+                                <option value="waterfall">Waterfall</option>
+                                <option value="split">Split</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" value="customer@example.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Name</label>
+                            <input type="text" id="name" name="name" value="John Doe" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-demo">Process Checkout →</button>
+                </form>
+            </div>
+            <div class="demo-modal-footer">
+                <button type="button" id="closeDemoForm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Checkout Modal -->
+    <div class="modal-overlay" id="checkoutModal">
+        <div class="modal">
+            <div class="modal-header">
+                <img src="logos/CoverPayLogoV1.png" alt="CoverPay" class="modal-logo">
+                <h2>Processing Payment</h2>
+                <div class="amount" id="modalAmount">$299.99</div>
+            </div>
+
+            <div class="modal-body">
+                <div id="providerSelection">
+                    <div class="modal-title">Finding the best payment option for you...</div>
+
+                    <div class="provider-grid">
+                        <div class="provider-card pending" id="card-klarna">
+                            <img src="logos/KlarnaLogo.jpeg" alt="Klarna">
+                            <div class="provider-name">Klarna</div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="provider-card pending" id="card-affirm">
+                            <img src="logos/affirmLogo.avif" alt="Affirm">
+                            <div class="provider-name">Affirm</div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="provider-card pending" id="card-afterpay">
+                            <img src="logos/afterPayLogo.jpg" alt="Afterpay">
+                            <div class="provider-name">Afterpay</div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="provider-card pending" id="card-sezzle">
+                            <img src="logos/sezzleLogo.png" alt="Sezzle">
+                            <div class="provider-name">Sezzle</div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="provider-card pending" id="card-zip">
+                            <img src="logos/zipLogo.png" alt="Zip">
+                            <div class="provider-name">Zip</div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                        <div class="provider-card pending" id="card-paypal">
+                            <img src="logos/PayPalLogo.jpg" alt="PayPal">
+                            <div class="provider-name">PayPal</div>
+                            <div class="status-badge">Pending</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-section">
+                        <div class="progress-text" id="progressStatus">Initializing...</div>
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="success-screen" id="successScreen">
+                    <div class="success-icon">✅</div>
+                    <h3>Payment Approved!</h3>
+                    <p>Your order has been approved</p>
+                    <div class="approved-provider" id="approvedProvider">
+                        <img src="" alt="" id="approvedProviderLogo">
+                        <div class="provider-label">Approved by <span id="approvedProviderName"></span></div>
+                    </div>
+                    <div class="success-details">
+                        <div class="detail-row">
+                            <span class="label">Transaction ID</span>
+                            <span class="value" id="txnId">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Amount</span>
+                            <span class="value" id="txnAmount">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Providers Tried</span>
+                            <span class="value" id="txnAttempts">-</span>
+                        </div>
+                        <div class="detail-row">
+                            <span class="label">Strategy</span>
+                            <span class="value" id="txnStrategy">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="declined-screen" id="declinedScreen">
+                    <div class="success-icon">❌</div>
+                    <h3>Unable to Approve</h3>
+                    <p>Unfortunately, none of our payment providers were able to approve this transaction.</p>
+                    <p style="font-size: 0.9em; color: #6b7280; margin-top: 10px;">All 6 providers were attempted.</p>
+                </div>
+            </div>
+
+            <div class="modal-footer" id="modalFooter" style="display: none;">
+                <button class="btn-close" id="closeModal">Close</button>
+                <button class="btn-redirect" id="redirectBtn">Continue to Checkout →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const providers = [
+            { id: 'klarna', name: 'Klarna', logo: 'logos/KlarnaLogo.jpeg', approvalRate: 0.70 },
+            { id: 'affirm', name: 'Affirm', logo: 'logos/affirmLogo.avif', approvalRate: 0.65 },
+            { id: 'afterpay', name: 'Afterpay', logo: 'logos/afterPayLogo.jpg', approvalRate: 0.60 },
+            { id: 'sezzle', name: 'Sezzle', logo: 'logos/sezzleLogo.png', approvalRate: 0.55 },
+            { id: 'zip', name: 'Zip', logo: 'logos/zipLogo.png', approvalRate: 0.50 },
+            { id: 'paypal', name: 'PayPal', logo: 'logos/PayPalLogo.jpg', approvalRate: 0.75 }
+        ];
+
+        const demoFormModal = document.getElementById('demoFormModal');
+        const checkoutModal = document.getElementById('checkoutModal');
+        const progressBar = document.getElementById('progressBar');
+        const progressStatus = document.getElementById('progressStatus');
+        const providerSelection = document.getElementById('providerSelection');
+        const successScreen = document.getElementById('successScreen');
+        const declinedScreen = document.getElementById('declinedScreen');
+        const modalFooter = document.getElementById('modalFooter');
+
+        // Open demo form
+        document.getElementById('openDemoBtn').addEventListener('click', () => {
+            demoFormModal.classList.add('active');
+        });
+
+        // Close demo form
+        document.getElementById('closeDemoForm').addEventListener('click', () => {
+            demoFormModal.classList.remove('active');
+        });
+
+        demoFormModal.addEventListener('click', (e) => {
+            if (e.target === demoFormModal) demoFormModal.classList.remove('active');
+        });
+
+        // Form submission
+        document.getElementById('checkoutForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const amount = parseFloat(document.getElementById('amount').value);
+            const strategy = document.getElementById('strategy').value;
+
+            document.getElementById('modalAmount').textContent = `$${amount.toFixed(2)}`;
+
+            demoFormModal.classList.remove('active');
+            resetModal();
+            checkoutModal.classList.add('active');
+
+            if (strategy === 'waterfall') {
+                await runWaterfall(amount);
+            } else {
+                await runSplit(amount);
+            }
+        });
+
+        function resetModal() {
+            providers.forEach(p => {
+                const card = document.getElementById(`card-${p.id}`);
+                card.className = 'provider-card pending';
+                card.querySelector('.status-badge').textContent = 'Pending';
+            });
+            progressBar.style.width = '0%';
+            progressStatus.textContent = 'Initializing...';
+            providerSelection.style.display = 'block';
+            successScreen.classList.remove('active');
+            declinedScreen.classList.remove('active');
+            modalFooter.style.display = 'none';
+            document.getElementById('redirectBtn').style.display = 'inline-block';
+        }
+
+        async function runWaterfall(amount) {
+            let approved = false;
+            let attempts = 0;
+
+            for (let i = 0; i < providers.length; i++) {
+                const provider = providers[i];
+                const card = document.getElementById(`card-${provider.id}`);
+                attempts++;
+
+                progressBar.style.width = `${((i + 1) / providers.length) * 100}%`;
+                progressStatus.innerHTML = `Checking <strong>${provider.name}</strong>...`;
+
+                card.className = 'provider-card checking';
+                card.querySelector('.status-badge').textContent = 'Checking...';
+
+                await sleep(1200 + Math.random() * 600);
+
+                if (Math.random() < provider.approvalRate) {
+                    card.className = 'provider-card approved';
+                    card.querySelector('.status-badge').textContent = '✓ Approved';
+                    approved = true;
+                    progressStatus.innerHTML = `<strong>Approved by ${provider.name}!</strong>`;
+                    await sleep(600);
+                    showSuccess(provider, amount, attempts);
+                    break;
+                } else {
+                    card.className = 'provider-card declined';
+                    card.querySelector('.status-badge').textContent = '✗ Declined';
+                }
+            }
+
+            if (!approved) {
+                progressStatus.innerHTML = '<strong>No providers available</strong>';
+                await sleep(400);
+                showDeclined();
+            }
+        }
+
+        async function runSplit(amount) {
+            const splitAmount = amount / 2;
+            progressStatus.innerHTML = `Splitting $${amount.toFixed(2)} across 2 providers...`;
+            await sleep(800);
+
+            const provider1 = providers[0];
+            const provider2 = providers[1];
+            const card1 = document.getElementById(`card-${provider1.id}`);
+            const card2 = document.getElementById(`card-${provider2.id}`);
+
+            card1.className = 'provider-card checking';
+            card1.querySelector('.status-badge').textContent = `$${splitAmount.toFixed(2)}`;
+            card2.className = 'provider-card checking';
+            card2.querySelector('.status-badge').textContent = `$${splitAmount.toFixed(2)}`;
+            progressBar.style.width = '50%';
+
+            await sleep(1800);
+
+            if (Math.random() < 0.8) {
+                card1.className = 'provider-card approved';
+                card1.querySelector('.status-badge').textContent = '✓ Approved';
+                card2.className = 'provider-card approved';
+                card2.querySelector('.status-badge').textContent = '✓ Approved';
+                progressBar.style.width = '100%';
+                progressStatus.innerHTML = '<strong>Split payment approved!</strong>';
+                await sleep(600);
+                showSplitSuccess(provider1, provider2, splitAmount);
+            } else {
+                card1.className = 'provider-card declined';
+                card1.querySelector('.status-badge').textContent = '✗ Declined';
+                progressStatus.innerHTML = 'Split failed, trying waterfall...';
+                await sleep(800);
+                await runWaterfall(amount);
+            }
+        }
+
+        function showSuccess(provider, amount, attempts) {
+            providerSelection.style.display = 'none';
+            successScreen.classList.add('active');
+            document.getElementById('approvedProviderLogo').src = provider.logo;
+            document.getElementById('approvedProviderName').textContent = provider.name;
+            document.getElementById('txnId').textContent = generateUUID().substring(0, 18) + '...';
+            document.getElementById('txnAmount').textContent = `$${amount.toFixed(2)}`;
+            document.getElementById('txnAttempts').textContent = attempts;
+            document.getElementById('txnStrategy').textContent = 'Waterfall';
+            modalFooter.style.display = 'flex';
+        }
+
+        function showSplitSuccess(provider1, provider2, splitAmount) {
+            providerSelection.style.display = 'none';
+            successScreen.classList.add('active');
+            document.getElementById('approvedProviderLogo').src = provider1.logo;
+            document.getElementById('approvedProviderName').textContent = `${provider1.name} + ${provider2.name}`;
+            document.getElementById('txnId').textContent = generateUUID().substring(0, 18) + '...';
+            document.getElementById('txnAmount').textContent = `$${(splitAmount * 2).toFixed(2)} (2 x $${splitAmount.toFixed(2)})`;
+            document.getElementById('txnAttempts').textContent = '2';
+            document.getElementById('txnStrategy').textContent = 'Split';
+            modalFooter.style.display = 'flex';
+        }
+
+        function showDeclined() {
+            providerSelection.style.display = 'none';
+            declinedScreen.classList.add('active');
+            modalFooter.style.display = 'flex';
+            document.getElementById('redirectBtn').style.display = 'none';
+        }
+
+        document.getElementById('closeModal').addEventListener('click', () => checkoutModal.classList.remove('active'));
+        document.getElementById('redirectBtn').addEventListener('click', () => {
+            alert('In production, this would redirect to the provider\'s checkout page.');
+            checkoutModal.classList.remove('active');
+        });
+        checkoutModal.addEventListener('click', (e) => { if (e.target === checkoutModal) checkoutModal.classList.remove('active'); });
+
+        function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+        function generateUUID() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+                const r = Math.random() * 16 | 0;
+                return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+            });
+        }
+    </script>
+</body>
+</html>

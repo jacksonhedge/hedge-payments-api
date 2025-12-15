@@ -39,6 +39,7 @@ npm run dev
 
 - **🔐 JWT Authentication** - Secure token-based auth
 - **💳 Payment Processing** - Create, cancel, refund payments via Coinflow
+- **🛒 CoverPay BNPL** - Intelligent Buy Now Pay Later orchestration across 6 providers (Klarna, Affirm, Afterpay, Sezzle, Zip, PayPal)
 - **💰 Balance Management** - Check balances, create payouts
 - **📊 Transaction History** - Complete transaction tracking and filtering
 - **✅ KYC Verification** - Full KYC workflow integration
@@ -221,6 +222,20 @@ Error responses:
 | PUT | `/:userId` | Update KYC info | ✅ |
 | GET | `/requirements` | Get KYC requirements | ✅ |
 
+### CoverPay BNPL (`/api/coverpay`)
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/health` | CoverPay service health check | ❌ |
+| POST | `/checkout` | Process BNPL checkout (waterfall/split) | ✅ |
+| GET | `/transactions` | Get merchant transactions | ✅ |
+| GET | `/transactions/:id` | Get transaction details | ✅ |
+| GET | `/analytics` | Get approval rates & analytics | ✅ |
+| GET | `/providers/stats` | Get provider performance stats | ✅ |
+| POST | `/webhook` | Handle provider webhooks | ❌ (verified) |
+
+**Demo:** [public/coverpay-demo.html](public/coverpay-demo.html) | **Docs:** [docs/COVERPAY_API.md](docs/COVERPAY_API.md)
+
 ## 📝 Example Requests
 
 ### Create Payment
@@ -250,6 +265,28 @@ curl -X GET "http://localhost:3000/api/transactions?page=1&limit=20&status=compl
 ```bash
 curl -X GET "http://localhost:3000/api/balance?currency=USD" \
   -H "Authorization: Bearer YOUR_TOKEN"
+```
+
+### Process BNPL Checkout (CoverPay)
+
+```bash
+curl -X POST http://localhost:3000/api/coverpay/checkout \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 29999,
+    "currency": "USD",
+    "strategy": "waterfall",
+    "customer": {
+      "email": "customer@example.com",
+      "phone": "+14155551234",
+      "name": "John Doe"
+    },
+    "merchant": {
+      "returnUrl": "https://yourstore.com/success",
+      "cancelUrl": "https://yourstore.com/cancel"
+    }
+  }'
 ```
 
 ## 🧪 Testing
