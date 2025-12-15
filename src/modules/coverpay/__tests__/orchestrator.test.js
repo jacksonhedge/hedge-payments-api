@@ -28,6 +28,7 @@ async function runTests() {
 
   // Helper to create CoverPay with all 6 providers
   const createFullCoverPay = () => createCoverPay({
+    enableLogging: false, // Disable DB logging for tests
     klarna: { enabled: true, mockMode: true, approvalThreshold: 20000 },    // < $200
     affirm: { enabled: true, mockMode: true, approvalThreshold: 50000 },    // < $500
     afterpay: { enabled: true, mockMode: true, approvalThreshold: 100000 }, // < $1000
@@ -115,6 +116,7 @@ async function runTests() {
   console.log('TEST 7: Custom order - PayPal first');
   console.log('-'.repeat(50));
   const coverpay7 = createCoverPay({
+    enableLogging: false,
     providerOrder: ['paypal', 'sezzle', 'zip', 'afterpay', 'affirm', 'klarna'],
     paypal: { enabled: true, mockMode: true, approvalThreshold: 150000 },
     sezzle: { enabled: true, mockMode: true, approvalThreshold: 250000 },
@@ -136,6 +138,7 @@ async function runTests() {
   console.log('TEST 8: PayPal minimum amount check ($25 - below $30 min)');
   console.log('-'.repeat(50));
   const coverpay8 = createCoverPay({
+    enableLogging: false,
     providerOrder: ['paypal', 'klarna'],
     paypal: { enabled: true, mockMode: true, approvalThreshold: 150000 },
     klarna: { enabled: true, mockMode: true, approvalThreshold: 20000 }

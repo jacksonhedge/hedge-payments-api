@@ -105,7 +105,13 @@ function createCoverPay(config = {}) {
     }
   }
 
-  return new CoverPayOrchestrator(providers);
+  // Orchestrator options
+  const orchestratorOptions = {
+    enableLogging: config.enableLogging !== false, // Default: true
+    merchantId: config.merchantId || 'default'
+  };
+
+  return new CoverPayOrchestrator(providers, orchestratorOptions);
 }
 
 /**
