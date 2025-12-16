@@ -27,6 +27,7 @@ exports.processCheckout = async (req, res, next) => {
       amount,
       currency,
       strategy,
+      fracturedOptions,
       merchantOrderId,
       customer,
       merchant,
@@ -38,7 +39,8 @@ exports.processCheckout = async (req, res, next) => {
       amount,
       strategy,
       merchantOrderId,
-      customerEmail: customer.email
+      customerEmail: customer.email,
+      fractured: strategy === 'fractured' || strategy === 'maximize'
     });
 
     const coverpay = getCoverPay();
@@ -52,14 +54,17 @@ exports.processCheckout = async (req, res, next) => {
         metadata
       },
       strategy,
-      merchantOrderId
+      merchantOrderId,
+      fracturedOptions
     });
 
     if (result.success) {
       logger.info('CoverPay checkout approved', {
         transactionId: result.transactionId,
         provider: result.provider,
-        strategy: result.strategy
+        strategy: result.strategy,
+        fractured: result.fractured,
+        providersUsed: result.providersUsed
       });
 
       res.status(200).json({
@@ -71,8 +76,39 @@ exports.processCheckout = async (req, res, next) => {
           redirectUrl: result.redirectUrl,
           strategy: result.strategy,
           split: result.split || false,
+          fractured: result.fractured || false,
           sessions: result.sessions,
+          // Fractured strategy fields
+          totalApproved: result.totalApproved,
+          targetAmount: result.targetAmount,
+          coveragePercent: result.coveragePercent,
+          providersUsed: result.providersUsed,
           attempts: result.attempts?.length || 1
+        }
+      });
+    } else if (result.partiallyCovered) {
+      // Partial approval - fractured got some but not all
+      logger.warn('CoverPay checkout partially approved', {
+        transactionId: result.transactionId,
+        totalApproved: result.totalApproved,
+        targetAmount: result.targetAmount,
+        coveragePercent: result.coveragePercent
+      });
+
+      res.status(206).json({
+        success: false,
+        partial: true,
+        error: 'BNPL_PARTIAL',
+        message: result.message,
+        data: {
+          transactionId: result.transactionId,
+          sessions: result.sessions,
+          totalApproved: result.totalApproved,
+          targetAmount: result.targetAmount,
+          remainingAmount: result.remainingAmount,
+          coveragePercent: result.coveragePercent,
+          providersUsed: result.providersUsed,
+          attempts: result.attempts
         }
       });
     } else {

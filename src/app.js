@@ -15,6 +15,7 @@ const balanceRoutes = require('./routes/balanceRoutes');
 const transactionRoutes = require('./routes/transactionRoutes');
 const kycRoutes = require('./routes/kycRoutes');
 const coverpayRoutes = require('./routes/coverpayRoutes');
+const merchantRoutes = require('./routes/merchantRoutes');
 
 // Create Express app
 const app = express();
@@ -81,6 +82,7 @@ app.get('/api', (req, res) => {
       transactions: '/api/transactions',
       kyc: '/api/kyc',
       coverpay: '/api/coverpay',
+      merchants: '/api/merchants',
     },
     documentation: '/api/docs',
     health: '/health',
@@ -94,6 +96,7 @@ app.use('/api/balance', balanceRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/kyc', kycRoutes);
 app.use('/api/coverpay', coverpayRoutes);
+app.use('/api/merchants', merchantRoutes);
 
 // 404 handler
 app.use(notFound);

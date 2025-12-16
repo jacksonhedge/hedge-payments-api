@@ -8,6 +8,7 @@
  * - Sezzle: https://docs.sezzle.com/docs/api/intro
  * - Zip: https://docs.us.zip.co/docs/custom-integration-guide
  * - PayPal: https://developer.paypal.com/docs/checkout/pay-later/us/
+ * - Stripe BNPL: https://stripe.com/docs/payments/buy-now-pay-later (fallback)
  */
 const BNPLProvider = require('./base');
 const KlarnaProvider = require('./klarna');
@@ -16,6 +17,7 @@ const AfterpayProvider = require('./afterpay');
 const SezzleProvider = require('./sezzle');
 const ZipProvider = require('./zip');
 const PayPalProvider = require('./paypal');
+const StripeBNPLProvider = require('./stripe-bnpl');
 
 module.exports = {
   BNPLProvider,
@@ -24,5 +26,6 @@ module.exports = {
   AfterpayProvider,
   SezzleProvider,
   ZipProvider,
-  PayPalProvider
+  PayPalProvider,
+  StripeBNPLProvider
 };

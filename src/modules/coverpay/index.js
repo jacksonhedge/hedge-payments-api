@@ -20,7 +20,8 @@ const {
   AfterpayProvider,
   SezzleProvider,
   ZipProvider,
-  PayPalProvider
+  PayPalProvider,
+  StripeBNPLProvider
 } = require('./providers');
 
 /**
@@ -87,11 +88,13 @@ function createCoverPay(config = {}) {
     afterpay: () => config.afterpay?.enabled ? new AfterpayProvider(config.afterpay) : null,
     sezzle: () => config.sezzle?.enabled ? new SezzleProvider(config.sezzle) : null,
     zip: () => config.zip?.enabled ? new ZipProvider(config.zip) : null,
-    paypal: () => config.paypal?.enabled ? new PayPalProvider(config.paypal) : null
+    paypal: () => config.paypal?.enabled ? new PayPalProvider(config.paypal) : null,
+    stripe_bnpl: () => config.stripe_bnpl?.enabled ? new StripeBNPLProvider(config.stripe_bnpl) : null
   };
 
   // Default order if not specified (recommended order for best approval rates)
-  const defaultOrder = ['klarna', 'affirm', 'afterpay', 'sezzle', 'zip', 'paypal'];
+  // Stripe BNPL is last as fallback after all direct providers
+  const defaultOrder = ['klarna', 'affirm', 'afterpay', 'sezzle', 'zip', 'paypal', 'stripe_bnpl'];
   const order = config.providerOrder || defaultOrder;
 
   // Add providers in specified order
@@ -145,6 +148,12 @@ function createCoverPayFromEnv() {
     paypal: {
       enabled: !!(process.env.PAYPAL_CLIENT_ID || mockMode),
       mockMode
+    },
+    stripe_bnpl: {
+      enabled: !!(process.env.STRIPE_SECRET_KEY || mockMode),
+      mockMode,
+      // Stripe BNPL tries Affirm, Klarna, Afterpay in sequence as fallback
+      enabledMethods: ['affirm', 'klarna', 'afterpay_clearpay']
     }
   };
 
@@ -164,5 +173,6 @@ module.exports = {
   AfterpayProvider,
   SezzleProvider,
   ZipProvider,
-  PayPalProvider
+  PayPalProvider,
+  StripeBNPLProvider
 };

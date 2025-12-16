@@ -9,8 +9,18 @@ const checkoutSchema = Joi.object({
     .description('Amount in cents'),
   currency: Joi.string().valid('USD').default('USD')
     .description('Currency code'),
-  strategy: Joi.string().valid('waterfall', 'split').default('waterfall')
-    .description('BNPL routing strategy'),
+  strategy: Joi.string().valid('waterfall', 'split', 'fractured', 'maximize').default('waterfall')
+    .description('BNPL routing strategy: waterfall (single provider), split (2 providers), fractured (maximize across many)'),
+  fracturedOptions: Joi.object({
+    minChunkSize: Joi.number().integer().min(1000).default(3500)
+      .description('Minimum amount per provider in cents (default $35)'),
+    maxProviders: Joi.number().integer().min(2).max(10).default(6)
+      .description('Maximum providers to use'),
+    startingChunkPercent: Joi.number().integer().min(10).max(100).default(50)
+      .description('Starting percentage of remaining to try'),
+    tryFullFirst: Joi.boolean().default(true)
+      .description('Try full amount with each provider before fracturing')
+  }).description('Options for fractured strategy'),
   merchantOrderId: Joi.string().max(100)
     .description('Your order reference ID'),
   customer: Joi.object({
@@ -60,7 +70,7 @@ const getTransactionSchema = Joi.object({
 const analyticsQuerySchema = Joi.object({
   startDate: Joi.date().iso().description('Start date for analytics'),
   endDate: Joi.date().iso().description('End date for analytics'),
-  provider: Joi.string().valid('klarna', 'affirm', 'afterpay', 'sezzle', 'zip', 'paypal')
+  provider: Joi.string().valid('klarna', 'affirm', 'afterpay', 'sezzle', 'zip', 'paypal', 'stripe_bnpl')
     .description('Filter by provider')
 });
 
@@ -70,7 +80,7 @@ const providerStatsQuerySchema = Joi.object({
 });
 
 const webhookSchema = Joi.object({
-  provider: Joi.string().valid('klarna', 'affirm', 'afterpay', 'sezzle', 'zip', 'paypal').required(),
+  provider: Joi.string().valid('klarna', 'affirm', 'afterpay', 'sezzle', 'zip', 'paypal', 'stripe_bnpl').required(),
   event: Joi.string().required(),
   transactionId: Joi.string(),
   sessionId: Joi.string(),

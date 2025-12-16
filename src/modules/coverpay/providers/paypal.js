@@ -150,11 +150,6 @@ class PayPalProvider extends BNPLProvider {
             cancel_url: merchant.cancelUrl || merchant.returnUrl
           }
         }
-      },
-      application_context: {
-        brand_name: merchant.name || 'Hedge Payments',
-        return_url: merchant.returnUrl,
-        cancel_url: merchant.cancelUrl || merchant.returnUrl
       }
     };
 
